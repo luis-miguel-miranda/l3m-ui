@@ -3,7 +3,7 @@ import Link from "next/link";
 const Navbar = () => {
   return (
     // Reference: https://daisyui.com/components/navbar/
-    <div className="navbar bg-base-100 ">
+    <div key="navigationBar" className="navbar bg-base-100 ">
       <div className="flex-1">
         <a className="btn btn-ghost normal-case text-xl">Quantum Architecture</a>
       </div>

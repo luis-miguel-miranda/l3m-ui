@@ -2,8 +2,8 @@ import { Articles, Article } from "..//api/articles"
 import ReactMarkdown from 'react-markdown'
 
 import RootLayout from "../layout";
-async function getData() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL}/articles`)
+async function getArticleData() {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL}/articles`, { next: { revalidate: 10 } })
   // The return value is *not* serialized
   // You can return Date, Map, Set, etc.
  
@@ -17,12 +17,11 @@ async function getData() {
 }
 
 export default async function Page() {
-  const articlesData = await getData()
+  const articlesData = await getArticleData()
   // Wait for the promises to resolve
   const [articles] = await Promise.all<Articles>([articlesData])
   return (
-    <RootLayout>
-      <div className="place-content-center w-5/6">
+      <main className="place-content-center w-5/6 ">
       <div>Article List</div>
       {articles.data.map((article) => (
         <div key={article.id} className="place-content-center collapse collapse-arrow bg-base-200">
@@ -35,8 +34,7 @@ export default async function Page() {
           </div>
         </div>
       ))}
-      </div>
-    </RootLayout>
+      </main>
   )
 }
 

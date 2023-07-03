@@ -2,7 +2,6 @@ import './globals.css'
 import { Inter } from 'next/font/google'
 import Navbar from "../components/NavBar";
 
-const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
   title: 'L3M Personal Page',
@@ -12,7 +11,7 @@ export const metadata = {
 export default function RootLayout({children,}: { children: React.ReactNode}) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body>
         <Navbar/>
         {children}
       </body>
