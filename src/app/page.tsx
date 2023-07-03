@@ -18,8 +18,9 @@ export default async function Page() {
   // Wait for the promises to resolve
   const [articles] = await Promise.all<Articles>([articlesData])
   return (
-    <>
-      <h1>Article List</h1>
+    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
+      <div>Article List</div>
       <ul>
       {articles.data.map((article) => (
         <div key={article.id}>
@@ -28,7 +29,8 @@ export default async function Page() {
         </div>
       ))}
       </ul>
-    </>
+      </div>
+    </main>
   )
 }
 // Albums Component
