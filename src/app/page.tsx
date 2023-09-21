@@ -8,7 +8,6 @@ export default async function Home() {
   return (
     <main>
       <Header/>
-      {/* @ts-expect-error Async Server Component */}
       <Blogpost/>
       <Footer/>
     </main>
