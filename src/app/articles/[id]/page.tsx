@@ -1,14 +1,13 @@
-import { Articles, Article } from "..//api/articles"
+import { Root, Article } from "..//..//api/article"
 import ReactMarkdown from 'react-markdown'
+import { useParams } from 'next/navigation'
 import RootLayout from "../layout";
-import Link from 'next/link'
 
-
-export default async function Page() {
-  const articlesData = await getArticleData()
+export default async function Page({ params }: { params: { id: string } }) {
+  const pageID = params.id
+  const articleData = await getArticleData(pageID)
   // Wait for the promises to resolve
-  const [articles] = await Promise.all<Articles>([articlesData])
- 
+  const [articles] = await Promise.all<Root>([articleData]) 
   return (
     <main className="mx-auto w-5/6">
       <div>Article List</div>
@@ -19,8 +18,8 @@ export default async function Page() {
 }
 
 // Get Article Data
-async function getArticleData() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL}/articles`,
+async function getArticleData(pageID: String) {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL}/articles/${pageID}`,
    { next: { revalidate: 10 } })
   // The return value is *not* serialized
   // You can return Date, Map, Set, etc.
@@ -35,19 +34,19 @@ async function getArticleData() {
 }
 
 // Article List Component
- async function ArticleList({ promise }: { promise: Promise<Articles> }){
+ async function ArticleList({ promise }: { promise: Promise<Root> }){
    // Wait for the albums promise to resolve
-   const articles= await promise
+   const root= await promise
    return (
-    <main>
-      {articles.data.map((article) => (       
-        <div key={article.id} className="bg-base-200">
+    <main>     
+        <div key={root.data.id} className="bg-base-200">
         <div className="text-xl font-medium">
-          {article.attributes.articleTitle}
+          {root.data.attributes.articleTitle}
         </div>
-        <div><Link href={`/articles/${article.id}`}>Read Further</Link></div>
+        <div className=""> 
+        <ReactMarkdown>{root.data.attributes.body}</ReactMarkdown>
         </div>
-      ))}
+        </div>
     </main>
    )
  }

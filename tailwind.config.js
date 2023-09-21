@@ -7,11 +7,11 @@ module.exports = {
   ],
   theme: {
   },
-  plugins: [require("daisyui")],
-  daisyui: {
-    base: true,
-    darkTheme: "dark",
-    themes: ["light", "dark", "cupcake"],
-  },
+  //plugins: [require("daisyui")],
+  //daisyui: {
+  //  base: true,
+  //  darkTheme: "dark",
+  //  themes: ["light", "dark", "cupcake"],
+  //},
 
 }
