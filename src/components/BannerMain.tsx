@@ -2,7 +2,7 @@ import React from "react";
 
 export const Header = (): JSX.Element => {
   return (
-    <div className="flex flex-col h-[1013px] items-start justify-around gap-[10px] relative bg-[#111111]">
+    <div className="flex flex-col h-[1013px] items-start justify-around gap-[10px]">
       <div className="absolute w-[182px] h-[29px] top-[239px] left-[98px] bg-[#79a779]" />
       <div className="absolute w-[157px] top-[241px] left-[112px] [font-family:'Inconsolata-Regular',Helvetica] font-normal text-[#fcfcfb] text-[18px] tracking-[4.32px] leading-[22.7px]">
         HI! EVERYONE
