@@ -1,67 +1,62 @@
+"use client";
 import { Article } from "../../../api/article"
-import ReactMarkdown from 'react-markdown'
+// remove ReactMarkdown import
 import { useParams } from 'next/navigation'
-import getConfig from 'next/config';
-const { publicRuntimeConfig } = getConfig();
+import { useEffect, useState } from 'react'
+import { getArticle } from '../../../utils/articleUtils';
 
-export default async function Page({ params }: { params: { id: string } }) {
-  console.log("IN MFD")
+export default function Page({ params }: { params: { id: string } }) {
   const pageID = params.id
-  const articleData = await getArticleData(pageID)
-  // Wait for the promises to resolve
-  const [article] = await Promise.all<Article>([articleData]) 
+  const [article, setArticle] = useState<Article | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchArticle() {
+      try {
+        const result = await getArticle(pageID);
+        if (result) {
+          setArticle(result as Article);
+        } else {
+          setError('Article not found');
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch article');
+      }
+    }
+    fetchArticle();
+  }, [pageID]);
+
+  if (error) {
+    return <div className="mx-auto w-5/6 text-error">Error: {error}</div>;
+  }
+
   return (
     <main className="mx-auto w-5/6">
-      <ArticleEntry article={article} ></ArticleEntry>
+      <ArticleEntry article={article} />
     </main>
   )
 }
 
-// Article List Component
-function ArticleEntry({ article }: { article: Article} ) {
-  // Wait for the albums promise to resolve
+function ArticleEntry({ article }: { article: Article | null }) {
+  if (!article) {
+    return <div className="flex justify-center p-4">Loading...</div>;
+  }
+
   return (
-   <main>     
-       <div key={article.data.id} className="bg-base-200">
-       <div className="text-xl font-medium">
-         {article.data.title}
-       </div>
-       <div className="" dangerouslySetInnerHTML={{ __html: article.data.content }}></div>
-       </div>
-   </main>
+    <article className="prose max-w-none">     
+      <div className="bg-base-200 p-4 rounded-lg">
+        <h1 className="text-2xl font-bold mb-4">
+          {article.data.title}
+        </h1>
+        <div 
+          className="article-content"
+          dangerouslySetInnerHTML={{ __html: article.data.content }}
+        />
+      </div>
+    </article>
   )
 }
 
-// Get Article Data
-async function getArticleData(pageId: String): Promise<Article> {
-  try {
-    const cms_url = publicRuntimeConfig.cmdApiUrl;
-
-    const res = await fetch(`${cms_url}/items/articles/${pageId}`, { next: { revalidate: 0 } });
-    console.log("Fetched from:", `${cms_url}/items/articles`); // Log the URL
-
-    if (!res.ok) {
-      const errorText = await res.text();
-      console.error("Error fetching articles:", errorText); 
-      throw new Error(`Failed to fetch data. Server responded with status ${res.status}: ${errorText}`);
-    }
-
-    const responseText = await res.text(); // Get the raw text response
-    //console.log("Raw API response:", responseText); // Log the raw response before parsing
-
-    // Remove any non-JSON characters from the end of the string
-    //const validJsonText = responseText.slice(0, responseText.lastIndexOf('}') + 1);
-    
-    const data = JSON.parse(responseText);
-    //console.log("Fetched articles:", data); // You can uncomment this to log the parsed data
-
-    return data as Article;
-
-  } catch (error) {
-    console.error("Error in getArticleData:", error); 
-    throw error; 
-  }
-}
 
 
 
