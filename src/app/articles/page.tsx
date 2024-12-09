@@ -1,56 +1,36 @@
-import { Articles, Article } from "..//api/articles"
-import ReactMarkdown from 'react-markdown'
+'use client';
+import { Articles } from "../../api/articles";
+import Link from 'next/link';
+import { Accordion, AccordionItem } from "@nextui-org/accordion";
+import ArticleList from '../../components/ArticleAccordion';
+import { useEffect, useState } from 'react';
+import { getArticleData } from '../../utils/articleUtils';
 
-import RootLayout from "../layout";
-async function getArticleData() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL}/articles`, { next: { revalidate: 10 } })
-  // The return value is *not* serialized
-  // You can return Date, Map, Set, etc.
- 
-  // Recommendation: handle errors
-  if (!res.ok) {
-    // This will activate the closest `error.js` Error Boundary
-    throw new Error('Failed to fetch data')
-  }
-  //console.log(res.json())
-  return res.json()
-}
+export default function Page() {
+  const domain = process.env.NEXT_PUBLIC_DOMAIN;
+  const [articles, setArticles] = useState<Articles | null>(null);
 
-export default async function Page() {
-  const articlesData = await getArticleData()
-  // Wait for the promises to resolve
-  const [articles] = await Promise.all<Articles>([articlesData])
+  useEffect(() => {
+    async function fetchArticles() {
+      const data = await getArticleData();
+      setArticles(data);
+    }
+    fetchArticles();
+  }, []);
+
   return (
-      <main className="place-content-center w-5/6 ">
-      <div>Article List</div>
-      {articles.data.map((article) => (
-        <div key={article.id} className="place-content-center collapse collapse-arrow bg-base-200">
-          <input type="radio" name="my-accordion-2" /> 
-          <div className="collapse-title text-xl font-medium">
-            {article.attributes.articleTitle}
-          </div>
-          <div className="collapse-content"> 
-          <ReactMarkdown>{article.attributes.body}</ReactMarkdown>
-          </div>
-        </div>
-      ))}
-      </main>
-  )
+    <main>
+      <div style={{ width: '90%', margin: 'auto' }}>
+        <h1>Article List</h1>
+        {articles && domain ? (
+          <ArticleList articles={articles} domain={domain} />
+        ) : (
+          <p>Loading...</p>
+        )}
+      </div>
+    </main>
+  );
 }
 
-// Albums Component
-// async function Articles({ promise }: {
-//   promise: Promise<Article[]>;
-// }): Promise<JSX.Element> {
-//   // Wait for the albums promise to resolve
-//   const articles = await promise
-//   return (
-//     <div>
-//     {articles.data.map((article) => (
-//       <div key={article.id}>
-//         <h2 >{article.attributes.articleTitle}</h2>
-//         <div>{article.attributes.body}</div>
-//       </div>
-//       )}
-//     </div>
-// }
+
+
